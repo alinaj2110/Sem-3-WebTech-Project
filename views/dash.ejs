@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8" />
+    
+    <meta name="description" content="A react application with a sign up form, login form" />
+    <meta name="robots" content="index, follow, noarchive" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0" />
+    <title>Dashboard</title>
+    <!-- react -->
+    <script crossorigin src="https://unpkg.com/react@16.7.0/umd/react.production.min.js"></script>
+    <!-- react dom -->
+    <script crossorigin src="https://unpkg.com/react-dom@16.7.0/umd/react-dom.production.min.js"></script>
+    <!-- babel -->
+    <script crossorigin src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+	<!-- react router -->
+	<script src='https://unpkg.com/react-router-dom@5.0.0/umd/react-router-dom.min.js'></script>
+	<!-- axios -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<style>
+        body {
+  padding: 0;
+  margin: 0;
+	color: #2d3436;
+  background: #ecf0f1;
+  font-family: "Poppins", sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#dashboard {
+  display: flex;
+  height: 100vh;
+}
+.sidebar-menu {
+  text-align: center;
+  align-items: center;
+  background: white;
+  height: 100%;
+  padding: 15px 0px 10px 0px;
+  flex: 1 1 300px;
+  overflow: hidden;
+}
+
+#profile-pic {
+  margin-top: 30px;
+  width: 5em;
+  border: none;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+#profile-pic:hover {
+  box-shadow: 1px 3px 12px 0px rgba(0, 0, 0, 0.45);
+}
+
+#display-name {
+  margin: 0;
+  margin-top: 10px;
+  font-size: 2em;
+  font-weight: 600;
+	color:#4834d4;
+}
+
+.subtitle {
+  margin: 0px 0px 5px 0px;
+}
+
+.menu-items {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.inactive-item {
+  padding: 20px 0px 20px 20px;
+  width: 100%;
+  text-align: left;
+  display: inline-block;
+  color: black;
+  background: rgba(0, 0, 0, 0.03);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.active-item {
+  padding: 20px 0px 20px 20px;
+  width: 100%;
+  text-align: left;
+  display: inline-block;
+  color: black;
+  background: rgba(0, 0, 0, 0.03);
+  transition: all 0.3s;
+  text-decoration: none;
+  border-left: 2px solid #4d00ff;
+  background: rgba(77, 0, 255, 0.08);
+}
+.menu-items a:hover {
+  border-left: 5px solid #4d00ff;
+  background: rgba(77, 0, 255, 0.11);
+}
+
+.full-btn {
+  margin: 10px;
+  width: 270px;
+  height: 40px;
+  background: #4834d4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+	transition: all 0.3s;
+} .full-btn:hover {
+	background: rgba(95, 15, 255, 0.76);
+}
+.dash-view {
+  margin: 40px;
+  flex: 5 5 calc(100vw - 300px);
+}
+.view-heading {
+  font-size: 2em;
+  font-weight: 600;
+}
+.dash-card {
+  margin: 20px 0px 0px 0px;
+	padding: 20px 0px 0px 30px;
+  min-height: 200px;
+  width: 95%;
+  border-radius: 20px;
+  background: white;
+}
+.card-heading {
+	font-weight: 500;
+	font-size: 1.1em;
+	
+}
+.card-subtitle {
+	font-size: 0.955em;
+}
+.table-container {
+	text-align: center;
+	display: flex;
+	flex-direction: row;
+	flex-basis: 100%;
+	flex-wrap: wrap;
+	width: 100%;
+	justify-content: space-evenly;
+	align-items: center;
+}
+#stats-container {
+	margin-top: 20px;
+	display: flex;
+	justify-content: space-around;
+	text-align: center;
+}
+table {
+	width: 100%;
+	padding-top: 20px;
+}
+th {
+	font-weight: 500;
+	color: #4834d4;
+}
+.lg-nmbr {
+	font-size: 3em;
+	color: #4834d4;
+}
+
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+	<script type="text/babel">        
+//var usertitle = "ConnectHub/Employee";
+var currentView = "profile";
+
+class Dashboard extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			view: "profile"
+		};
+		this.setView = this.setView.bind(this);
+	}
+
+	setView(view) {
+		this.setState({ view: view });
+		currentView = view;
+		console.log(view);
+	}
+
+	render() {
+		switch(this.state.view) {
+			case "profile":
+				return (
+				<div id="dashboard">
+					<Sidebar setView={this.setView} />
+					<Profile />
+				</div>
+			);
+			case "counsellors":
+			return (
+				<div id="dashboard">
+					<Sidebar setView={this.setView} />
+					<CounsellorsView />
+				</div>
+			);
+		
+		}
+	}
+}
+
+class Sidebar extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	setView(view) {
+		this.props.setView(view);
+		console.log("level 2 " + view);
+	}
+	render() {
+		return (
+			<div class="sidebar-menu">
+				<UserProfileView />
+				<SidebarMenu
+					item1={"Profile"}
+					item2={"Counsellors"}	
+					setView={this.props.setView}
+				/>
+                <div>
+					<form action="/logout?_method=DELETE" method="POST">
+					<button id="sign-out-btn" class="full-btn" >Sign Out</button>
+					</form>
+				</div>
+			</div>
+		);
+	}
+}
+
+class UserProfileView extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			name: "",
+			username:""
+		};
+	}
+	async componentDidMount() {
+		console.log("component mounted")
+    const response = await axios.get('/dashboard');
+	const resdata = await response.data;
+	
+    this.setState({ name: resdata.name, username: resdata.username},()=>{
+		console.log("data: " + this.state.name + resdata.name);
+	});
+  	}
+
+	render() {
+		return (
+			<div class="user-profile">
+				<img
+					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ2wn18dnC8OmX7Qx49epjgoHREUBHEviB10griBGemOmkYQoK5g"
+					id="profile-pic"
+				/>
+				<h3 id="display-name">{this.state.name}</h3>
+				<p class="subtitle">@{this.state.username}</p>
+			</div>
+		);
+	}
+}
+
+class SidebarMenu extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			profile: "active-item",
+			counsellors: "inactive-item",
+		};
+		this.setBtnAndView = this.setBtnAndView.bind(this);
+	}
+
+	setBtnAndView(view) {
+		this.props.setView(view);
+		if (view == "profile") {
+			this.setState({
+				profile: "active-item",
+				counsellors: "inactive-item"
+			});
+		} else if (view == "counsellors") {
+			this.setState({
+				profile: "inactive-item",
+				counsellors: "active-item",
+			});
+		} 
+	}
+
+	render() {
+		return (
+			<div class="menu-items">
+				<a
+					class={this.state.profile}
+					href="#"
+					onClick={() => this.setBtnAndView("profile")}
+				>
+					{this.props.item1}
+				</a>
+				<a
+					class={this.state.counsellors}
+					href="#"
+					onClick={() => this.setBtnAndView("counsellors")}
+				>
+					{this.props.item2}
+				</a>
+				
+			</div>
+		);
+	}
+}
+
+class Profile extends React.Component {
+	constructor(props) {
+		super(props);
+		
+	}
+
+		
+	render() {
+		return (
+			<div class="dash-view">
+				<h2 class="view-heading">Here's your profile...</h2>
+				<DashboardCard />
+			</div>
+		);
+	}
+}
+
+class CounsellorsView extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		return (
+			<div class="dash-view">
+				<h2 class="view-heading">Check your counsellors.</h2>
+				<DashboardCard />
+			</div>
+		);
+	}
+}
+
+class DashboardCard extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			name:"",
+			email:"",
+			ph:"",
+			counsel:[],
+		};
+	}
+	async componentDidMount() {
+		console.log("component mounted")
+    /*var response = await axios.get('/dashboard');
+    var resdata = await response.data;
+    this.setState({ name: resdata.name, email: resdata.email, ph: resdata.mobile_no},()=>{
+		console.log("data: " + this.state.email + this.state.ph);
+	
+	var responsecounsel = await axios.get('/counsellors');
+    var resdatacounsel = await responsecounsel.data;
+    this.setState({ counsel: resdatacounsel},()=>{
+		console.log("data: " + this.state.counsel);
+		});
+	})*/
+	Promise.all([
+		axios.get('/dashboard'),
+		axios.get('/counsellors')
+	])
+	.then(([res1,res2])=>{
+		this.setState({ name: res1.data.name, email: res1.data.email, ph: res1.data.mobile_no, counsel: res2.data},()=>{
+		console.log("data: " + JSON.stringify(this.state.counsel));})
+	})	
+}
+	
+	render() {
+		switch(currentView) {
+			case "profile":
+		return( 
+		<div class="dash-card"> 
+			<ProfileCardContent nm={this.state.name} mail={this.state.email} ph={this.state.ph}/>
+		</div>);
+				case "counsellors":
+		return( 
+		<div class="dash-card"> 
+				{
+					this.state.counsel.map((counsellor,i)=>{
+						return <CounsellorsCardContent key={i} arrayobj={counsellor}/>
+					})
+				}
+				
+		</div>);
+		}
+		}
+	}
+
+const ProfileCardContent = ({nm,mail,ph}) => (
+	<div>
+		<h4 class="card-subtitle">Name:{nm} </h4>
+		<h4 class="card-heading">Email: {mail}</h4>
+		<h4 class="card-heading">Phone Number: {ph}</h4>
+	</div>
+);
+const CounsellorsCardContent = ({arrayobj}) => (
+	<div>
+		<h4 class="card-subtitle">Name:{arrayobj.name} </h4>
+		<h4 class="card-heading">Speciality: {arrayobj.speciality}</h4>
+		<h4 class="card-heading">Address: {arrayobj.address}</h4>
+		<h4 class="card-heading">Email: {arrayobj.email}</h4>
+		<h4 class="card-heading">Phone Number: {arrayobj.mobile_no}</h4>
+		<br/> 
+	</div>
+);
+
+ReactDOM.render(
+	<Dashboard />, 
+	document.getElementById("container"));
+
+
+
+    </script>
+</body>
+</html>

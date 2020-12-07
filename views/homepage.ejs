@@ -1,0 +1,512 @@
+<!DOCTYPE HTML>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8" />
+    
+    <meta name="description" content="A react application with a sign up form, login form" />
+    <meta name="robots" content="index, follow, noarchive" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0" />
+    <title>Peaceful Mind</title>
+    <!-- react -->
+    <script crossorigin src="https://unpkg.com/react@16.7.0/umd/react.production.min.js"></script>
+    <!-- react dom -->
+    <script crossorigin src="https://unpkg.com/react-dom@16.7.0/umd/react-dom.production.min.js"></script>
+    <!-- babel -->
+	<script crossorigin src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+	<!-- axios -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        @charset "UTF-8";
+
+body, html {
+	margin: 0;
+	padding: 0;
+	font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+	<script type="text/babel">
+        const Navigation = (props) => {
+	const ulStyling = {
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-around",
+
+		margin: 0,
+		padding: 0,
+		borderBottom: "#775577 solid 1px",
+		listStyleType: "none",
+		backgroundColor: "#DDAADD",
+		textAlign: "center",
+	};
+
+	const liStyling = {
+		flex: 1,
+
+		borderRight: "#775577 solid 1px",
+		padding: "10px 0",
+		textAlign: "center"
+	};
+
+	const navigationItems = props.tabs.map((tab, index) => {
+		return (
+			<li key={index} className={tab.toLowerCase()} style={liStyling} onClick={() => {
+				props.handleChange(tab);
+			}}>{tab}</li>
+		);
+	});
+
+	return (
+		<ul style={ulStyling}>
+			{ navigationItems }
+		</ul>
+	);
+};
+
+const Header = (props) => {
+	const tabs = ["Signup", "Login"];
+
+	const headerStyling = {
+		backgroundColor: "#31c8d6"
+	};
+
+	const headingStyling = {
+		margin: 0,
+		borderBottom: "#22AA22 solid 1px",
+		padding: "8px 0px",
+		textAlign: "center"
+	};
+
+	return (
+		<header style={headerStyling}>
+			<h1 style={headingStyling}>{props.name}</h1>
+			<Navigation tabs={tabs} handleChange={props.handleChange}/>
+		</header>
+	);
+};
+
+class Signup extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+                  yourname:"",
+                  youremail:"",
+			username: "",
+			password: "",
+			yourphone:"",
+		};
+	};
+
+	handleChange = (event) => {
+		const { name, value} = event.target;
+
+		this.setState({
+			[name]: value
+		});
+	};
+
+	handleSubmit = (event) => {
+		event.preventDefault();
+
+		const { yourname,youremail, username, password, yourphone, } = this.state;
+
+		if (yourname==="" || youremail==="" || username === "" || password === "" || yourphone=="") {
+			console.log("fields must not be empty");
+		} else if (youremail.indexOf(" ")!==-1|| username.indexOf(" ") !== -1 || password.indexOf(" ") !== -1 || yourphone.indexOf(" ")!== -1 ) {
+			console.log("fields mus not contain spaces")
+		} else {
+			this.props.handleSubmit(yourname,youremail, username, password,yourphone);
+			axios.post('/register', { 
+				username:username,
+				password:password,
+				name:yourname,
+				email: youremail,
+				ph: yourphone
+			}).then( res =>{
+		console.log(res)
+		});
+			this.setState({
+                        yourname: "",
+                        youremail: "",
+				username: "",
+				password: "",
+				yourphone:""
+			});
+		}
+	};
+
+	render() {
+		const {yourname,youremail, username, password,yourphone } = this.state;
+
+		const legendStyling = {
+			textAlign: "center"
+		};
+
+		const inputStyling = {
+			display: "block",
+			margin: "20px auto",
+			border: "#AAAAFF solid 1px",
+			borderRadius: "4px",
+			width: "170px",
+			height: "30px",
+			textAlign: "center",
+			fontFamily: "Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif",
+			fontSize: "1em"
+		};
+
+		const submitStyling = {
+			display: "block",
+			margin: "20px auto",
+			border: "#454545 solid 1px",
+			borderRadius: "5px",
+			padding: "8px 20px",
+			backgroundColor: "#DDAADD",
+			fontSize: "1em",
+			color: "#000000"
+		};
+
+		const formStyling = {
+			margin: "30px auto",
+			border: "#FFAAAA solid 1px",
+			borderRadius: "4px",
+			padding: "20px 0px",
+			width: "200px",
+			backgroundColor: "#31c8d6",
+		};
+
+		return (
+			<form onSubmit={this.handleSubmit} style={formStyling}>
+                        <legend style={legendStyling}>Sign Up</legend>
+                        <label htmlFor="s-yourname">
+					<input type="text" name="yourname" value={yourname} placeholder="Your name" style={inputStyling} onChange={this.handleChange} />
+                        </label>
+                        <label htmlFor="s-youremail">
+					<input type="text" name="youremail" value={youremail} placeholder="Email" style={inputStyling} onChange={this.handleChange} />
+				</label>
+				<label htmlFor="s-yourphone">
+					<input type="text" name="yourphone" value={yourphone} placeholder="Phone Number" style={inputStyling} onChange={this.handleChange} />
+				</label>
+				<label htmlFor="s-username">
+					<input type="text" name="username" value={username} placeholder="Username" style={inputStyling} onChange={this.handleChange} />
+				</label>
+
+				<label htmlFor="s-password">
+					<input type="password" name="password" value={password} placeholder="Password" style={inputStyling} onChange={this.handleChange} />
+				</label>
+				<input type="submit" value="Sign Up" style={submitStyling} />
+			</form>
+		);
+	};
+};
+
+class Login extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			username: "",
+			password: ""
+		};
+	};
+
+	handleChange = (event) => {
+		const { name, value } = event.target;
+
+		this.setState({
+			[name]: value
+		});
+	};
+
+	handleSubmit = (event) => {
+		event.preventDefault();
+
+		const { username, password } = this.state;
+
+		if (this.props.handleSubmit(username, password)) {
+			axios.post('/login', { 
+				username:username,
+				password:password
+			}).then( res =>{
+		//console.log(res);
+		window.location.reload();
+		});
+			this.setState({
+				username: "",
+				password: ""
+			});
+		} else {
+			// only reset password
+			this.setState({
+				password: ""
+			});
+		}
+	};
+
+	render() {
+		const { username, password } = this.state;
+		const loggedIn = (this.props.loggedIn);
+
+		const legendStyling = {
+			textAlign: "center"
+		};
+
+		const inputStyling = {
+			display: "block",
+			margin: "20px auto",
+			border: "#8888FF solid 1px",
+			borderRadius: "4px",
+			width: "170px",
+			height: "30px",
+			textAlign: "center",
+			fontFamily: "Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif",
+			fontSize: "1em"
+		};
+
+		const submitStyling = {
+			display: "block",
+			margin: "20px auto",
+			border: "#BCBCBC solid 1px",
+			borderRadius: "5px",
+			padding: "8px 20px",
+			backgroundColor: "#DDAADD",
+			fontSize: "1em",
+			color: "#454545"
+		};
+
+		const formStyling = {
+			margin: "30px auto",
+			border: "#FFAAAA solid 1px",
+			borderRadius: "4px",
+			padding: "20px 0px",
+			width: "200px",
+			backgroundColor: "#31c8d6",
+		};
+
+		//if (!loggedIn) {
+			return (
+				<form style={formStyling} onSubmit={this.handleSubmit} action="/dashboard">
+					<legend style={legendStyling}>Login</legend>
+
+					<label htmlFor="l-username">
+						<input type="text" name="username" value={username} placeholder="Username" style={inputStyling} onChange={this.handleChange} />
+					</label>
+
+					<label htmlFor="l-password">
+						<input type="password" name="password" value={password} placeholder="Password" style={inputStyling} onChange={this.handleChange} />
+					</label>
+					
+					<input type="submit" value="Login" style={submitStyling} />
+				</form>
+			);
+		/*} else {
+			const { password, username } = this.props.currentUser;
+
+			const containerStyling = {
+				margin: "30px 20%",
+				border: "#FF7700 solid 1px",
+				borderRadius: "6px",
+				textAlign: "center"
+			};
+
+			return (
+				<div style={containerStyling}>
+					<h2>Welcome Back</h2>
+					<div>
+						<p>Your username is: { username }</p>
+						<p>Your password is: { password }</p>
+					</div>
+					<button style={submitStyling} onClick={this.props.handleLog}>Logout</button>
+				</div>
+			);
+		}*/
+	};
+};
+
+const Database = (props) => {
+	const tableStyling = {
+		margin: "30px auto",
+		border: "#000000 solid 1px",
+		borderCollapse: "collapse",
+		borderRadius: "4px",
+		width: "95%",
+		textAlign: "center"
+	};
+
+	const rowStyling = {
+		border: "#000000 solid 1px"
+	};
+
+	const cellStyling = {
+		border: "#000000 solid 1px",
+		padding: "15px 10px"
+	};
+
+	const deleteStyling = {
+		border: "#4682B4 solid 2px",
+		borderRadius: "3px",
+		padding: "10px 25px",
+		backgroundColor: "#AA55AA",
+		fontSize: "1em",
+		color: "#FFFFFF"
+	};
+
+	const users = props.users.map((user, index) => {
+		return (
+			<tr key={index} style={rowStyling}>
+				<td style={cellStyling}>{user.username}</td>
+				<td style={cellStyling}>{user.password}</td>
+				<td style={cellStyling}><button style={deleteStyling} onClick={() => {
+					props.handleDelete(index);
+				}}>Delete</button></td>
+			</tr>
+		);
+	});
+
+	return (
+		<table style={tableStyling}>
+			<thead>
+				<tr style={rowStyling}>
+					<td style={cellStyling}>Username</td>
+					<td style={cellStyling}>Password</td>
+					<td style={cellStyling}>Delete</td>
+				</tr>
+			</thead>
+			<tbody>
+				{ users }
+			</tbody>
+			<tfoot>
+				<tr style={rowStyling}>
+					<td colSpan="3" style={cellStyling}>This table is rendered using ReactJS</td>
+				</tr>
+			</tfoot>
+		</table>
+	);
+};
+
+
+
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {	
+			currentUser: {
+
+			},
+			loggedIn: false,
+			name: "Peaceful Mind",
+			users: [],
+			tab: "Signup"
+		};
+	};
+
+	addUser = (yourname,youremail, username, password) => {
+		let exists = false;
+		this.state.users.forEach((user, index) => {
+			if (username === user.username) {
+				exists = true;
+				return;
+			}
+		});
+
+		if (!exists) {
+			const users = this.state.users.concat([{
+				username: username,
+				password: password
+			}]);
+
+			this.setState({
+				users: users
+			});
+		} else {
+			console.log("user already exists");
+		}
+	};
+
+	changeTab = (tab) => {
+		this.setState({
+			tab: tab
+		});
+	};
+
+	deleteUser = (index) => {
+		const users = this.state.users.filter((user, userIndex) => {
+			return userIndex !== index;
+		});
+
+		this.setState({
+			users: users
+		});
+	};
+
+	handleLog = () => {
+		const loggedIn = this.state.loggedIn;
+
+		this.setState({
+			loggedIn: !loggedIn
+		});
+
+		if (loggedIn) {
+			this.setState({
+				currentUser: {}
+			});
+		}
+	};
+
+	handleLogin = (username, password) => {
+		const users = this.state.users;
+
+		const login = users.filter((user, index) => {
+			if (user.username === username && user.password === password) {
+				return user;
+			} else {
+				return false;
+			}
+		});
+
+		if (login.length !== 0) {
+			this.setState({
+				currentUser: login[0]
+			});
+
+			this.handleLog();
+			return true;
+		} else {
+			return false;
+		}
+	};
+
+	render() {
+		const { creation, currentUser, loggedIn, name, users, tab } = this.state;
+		const errorStyling = {
+			padding: "100px 0",
+			textAlign: "center",
+			fontSize: "1.5em"
+		};
+
+		return (
+			<div className="app">
+				<Header name={name} handleChange={this.changeTab} />
+
+				{ tab === "Signup" && <Signup name="signuptab" handleSubmit={this.addUser} /> }
+				{ tab === "Login" && <Login name="logintab" loggedIn={loggedIn} currentUser={currentUser} handleSubmit={this.handleLogin} handleLog={this.handleLog} /> }
+				{ (tab !== "Signup" && tab !== "Login") && 
+					<div>
+						<p style={errorStyling}>Error: tab not recognised</p>
+					</div>
+				}
+			</div>
+		);
+	};
+};
+
+ReactDOM.render(
+	<App />,
+	document.getElementById("root"),
+);
+
+
+    </script>
+</body>
+</html>
